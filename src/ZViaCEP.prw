@@ -12,11 +12,12 @@ Consulta informações de endereço através da API ViaCEP.
 
 User Function ZViaCEP(cCEP)
 
-    Local cURL     := "",0
+    Local cURL     := ""
     Local cRetorno := ""
+    Local cErroJson := ""
     Local oJson    := JsonObject():New()
-
-    // Remove caracteres desnecessários
+   
+    // Remove caracteres desnecessarios
     cCEP := StrTran(cCEP, "-", "")
     cCEP := StrTran(cCEP, " ", "")
 
@@ -25,9 +26,9 @@ User Function ZViaCEP(cCEP)
         Return "ERRO: CEP deve possuir 8 caracteres."
     EndIf
 
-    // Valida se o CEP possui apenas números
+    // Valida se o CEP possui apenas numeros
     If !IsDigit(cCEP)
-        Return "ERRO: CEP deve conter apenas números."
+        Return "ERRO: CEP deve conter apenas numeros."
     EndIf
 
     // Monta a URL da API
@@ -36,6 +37,11 @@ User Function ZViaCEP(cCEP)
     // Realiza a requisição HTTP GET
     cRetorno := HttpGet(cURL)
 
-    // Próximo passo: converter o retorno JSON para objeto
+    // Converte a resposta da API para um objeto JSON
+    cErroJson := oJson:FromJson(cRetorno)
+
+    If !Empty(cErroJson)
+        Return "ERRO: Não foi possível interpretar a resposta da API."
+    EndIf
 
     Return cRetorno
