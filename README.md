@@ -1,14 +1,14 @@
 # ADVPL ViaCEP Integration
 
-Projeto de portfólio desenvolvido em ADVPL para demonstrar experiência com integrações entre sistemas, consumo de APIs REST, tratamento de respostas JSON e validação de dados no ambiente TOTVS Protheus.
+Projeto de portfólio desenvolvido em ADVPL para demonstrar conhecimentos em integração de sistemas, consumo de APIs REST, tratamento de respostas JSON e validação de dados no ecossistema TOTVS Protheus.
 
-A solução realiza consultas de CEP através da API pública ViaCEP, retornando informações de endereço para utilização em processos cadastrais.
+A solução realiza consultas de CEP por meio da API pública ViaCEP, retornando informações de endereço que podem ser utilizadas em processos de cadastro e atualização de dados.
 
-Os conceitos aplicados neste projeto são inspirados em situações reais encontradas durante minha atuação com ERP TOTVS Protheus.
+Os conceitos aplicados neste projeto foram inspirados em experiências práticas adquiridas durante minha atuação com ERP TOTVS Protheus, sendo adaptados e reconstruídos para fins de estudo, demonstração técnica e portfólio.
 
 ## Objetivo
 
-Realizar uma consulta de endereço utilizando um CEP informado pelo usuário, consumindo a API pública ViaCEP e tratando a resposta retornada em JSON.
+Realizar consultas de endereço a partir de um CEP informado pelo usuário, consumindo a API pública ViaCEP e tratando os dados retornados em formato JSON.
 
 ## Tecnologias
 
@@ -38,3 +38,4 @@ Resposta JSON
 Tratamento dos dados
      ↓
 Dados do endereço
+```
