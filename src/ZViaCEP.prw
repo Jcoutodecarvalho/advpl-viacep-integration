@@ -4,7 +4,7 @@
 Consulta informações de endereço através da API ViaCEP.
 
 @param cCEP, Character, CEP que será consultado
-@return Array, Dados do endereço encontrado
+@return Character, Resposta JSON retornada pela API ViaCEP
 
 @author Jhonatan Carvalho
 @since 16/08/2026
@@ -12,36 +12,63 @@ Consulta informações de endereço através da API ViaCEP.
 
 User Function ZViaCEP(cCEP)
 
-    Local cURL     := ""
     Local cRetorno := ""
-    Local cErroJson := ""
-    Local oJson    := JsonObject():New()
-   
-    // Remove caracteres desnecessarios
+
+    cCEP := FormataCEP(cCEP)
+
+    If !ValidaCEP(cCEP)
+        Return "ERRO: CEP invalido."
+    EndIf
+
+    cRetorno := ConsultaViaCEP(cCEP)
+
+Return cRetorno
+
+
+Static Function FormataCEP(cCEP)
+
     cCEP := StrTran(cCEP, "-", "")
     cCEP := StrTran(cCEP, " ", "")
 
-    // Valida quantidade de caracteres
+Return cCEP
+
+
+Static Function ValidaCEP(cCEP)
+
     If Len(cCEP) <> 8
-        Return "ERRO: CEP deve possuir 8 caracteres."
+        Return .F.
     EndIf
 
-    // Valida se o CEP possui apenas numeros
     If !IsDigit(cCEP)
-        Return "ERRO: CEP deve conter apenas numeros."
+        Return .F.
     EndIf
+
+Return .T.
+
+
+Static Function ConsultaViaCEP(cCEP)
+
+    Local cURL      := ""
+    Local cRetorno  := ""
+    Local cErroJson := ""
+    Local oJson     := JsonObject():New()
 
     // Monta a URL da API
     cURL := "https://viacep.com.br/ws/" + cCEP + "/json/"
 
-    // Realiza a requisição HTTP GET
+    // Realiza a requisicao HTTP GET
     cRetorno := HttpGet(cURL)
 
     // Converte a resposta da API para um objeto JSON
     cErroJson := oJson:FromJson(cRetorno)
 
     If !Empty(cErroJson)
-        Return "ERRO: Não foi possível interpretar a resposta da API."
+        Return "ERRO: Nao foi possivel interpretar a resposta da API."
     EndIf
 
-    Return cRetorno
+    // Verifica se o ViaCEP informou que o CEP nao existe
+    If oJson:GetJsonObject("erro") == .T.
+        Return "ERRO: CEP nao encontrado."
+    EndIf
+
+Return cRetorno
