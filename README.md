@@ -1,6 +1,10 @@
 # ADVPL ViaCEP Integration
 
-Projeto de estudo e portfólio desenvolvido em ADVPL para demonstrar o consumo de uma API REST pública de consulta de CEP.
+Projeto de portfólio desenvolvido em ADVPL para demonstrar experiência com integrações entre sistemas, consumo de APIs REST, tratamento de respostas JSON e validação de dados no ambiente TOTVS Protheus.
+
+A solução realiza consultas de CEP através da API pública ViaCEP, retornando informações de endereço para utilização em processos cadastrais.
+
+Os conceitos aplicados neste projeto são inspirados em situações reais encontradas durante minha atuação com ERP TOTVS Protheus.
 
 ## Objetivo
 
