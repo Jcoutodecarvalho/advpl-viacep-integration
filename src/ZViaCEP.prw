@@ -1,10 +1,10 @@
 #Include "TOTVS.ch"
 
 /*/{Protheus.doc} ZViaCEP
-Consulta informações de endereço através da API ViaCEP.
+Consulta informacoes de endereco atraves da API ViaCEP.
 
-@param cCEP, Character, CEP que será consultado
-@return Character, Resposta JSON retornada pela API ViaCEP
+@param cCEP, Character, CEP que sera consultado
+@return Array, Status da consulta, mensagem e dados do endereco
 
 @author Jhonatan Carvalho
 @since 16/08/2026
@@ -12,17 +12,17 @@ Consulta informações de endereço através da API ViaCEP.
 
 User Function ZViaCEP(cCEP)
 
-    Local cRetorno := ""
+    Local aRetorno := {}
 
     cCEP := FormataCEP(cCEP)
 
     If !ValidaCEP(cCEP)
-        Return "ERRO: CEP invalido."
+        Return {.F., "CEP invalido.", {}}
     EndIf
 
-    cRetorno := ConsultaViaCEP(cCEP)
+    aRetorno := ConsultaViaCEP(cCEP)
 
-Return cRetorno
+Return aRetorno
 
 
 Static Function FormataCEP(cCEP)
@@ -52,6 +52,7 @@ Static Function ConsultaViaCEP(cCEP)
     Local cRetorno  := ""
     Local cErroJson := ""
     Local oJson     := JsonObject():New()
+    Local aEndereco := {}
 
     // Monta a URL da API
     cURL := "https://viacep.com.br/ws/" + cCEP + "/json/"
@@ -59,16 +60,23 @@ Static Function ConsultaViaCEP(cCEP)
     // Realiza a requisicao HTTP GET
     cRetorno := HttpGet(cURL)
 
-    // Converte a resposta da API para um objeto JSON
+    // Converte a resposta da API para objeto JSON
     cErroJson := oJson:FromJson(cRetorno)
 
     If !Empty(cErroJson)
-        Return "ERRO: Nao foi possivel interpretar a resposta da API."
+        Return {.F., "Nao foi possivel interpretar a resposta da API.", {}}
     EndIf
 
-    // Verifica se o ViaCEP informou que o CEP nao existe
+    // Verifica se o CEP foi encontrado
     If oJson:GetJsonObject("erro") == .T.
-        Return "ERRO: CEP nao encontrado."
+        Return {.F., "CEP nao encontrado.", {}}
     EndIf
 
-Return cRetorno
+    // Monta os dados do endereco
+    AAdd(aEndereco, {"cep",        oJson:GetJsonObject("cep")})
+    AAdd(aEndereco, {"logradouro", oJson:GetJsonObject("logradouro")})
+    AAdd(aEndereco, {"bairro",     oJson:GetJsonObject("bairro")})
+    AAdd(aEndereco, {"cidade",     oJson:GetJsonObject("localidade")})
+    AAdd(aEndereco, {"uf",         oJson:GetJsonObject("uf")})
+
+Return {.T., "", aEndereco}
