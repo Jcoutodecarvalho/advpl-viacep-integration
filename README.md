@@ -27,12 +27,16 @@ Realizar consultas de endereço a partir de um CEP informado pelo usuário, cons
 - Conversão de resposta JSON para estrutura ADVPL
 - Tratamento de CEP inexistente
 - Tratamento de erros de conversão JSON
+- Padronização de códigos de retorno
 - Exemplo de utilização da integração
+- Documentação de casos de teste
 
 ## Fluxo da aplicação
 
 ```text
 CEP informado
+     ↓
+Formatação do CEP
      ↓
 Validação do CEP
      ↓
@@ -44,10 +48,13 @@ API ViaCEP
      ↓
 Resposta JSON
      ↓
+Conversão do JSON
+     ↓
 Tratamento dos dados
      ↓
-Dados do endereço
+Retorno estruturado
 ```
+
 ## Estrutura do projeto
 
 ```text
@@ -60,6 +67,7 @@ advpl-viacep-integration
 │   └── ExemploViaCEP.prw
 │
 ├── docs
+│   └── casos-de-teste.md
 │
 ├── .gitignore
 │
@@ -74,14 +82,22 @@ A função principal pode ser chamada através de `U_ZViaCEP()`.
 aRetorno := U_ZViaCEP("01001000")
 ```
 
-O retorno segue a estrutura:
+O retorno segue o contrato:
 
 ```text
 {
-    sucesso,
-    mensagem,
+    status,
+    codigo,
     dados
 }
+```
+
+Onde:
+
+```text
+[1] status -> .T. para sucesso ou .F. para erro
+[2] codigo -> código que identifica o resultado da operação
+[3] dados  -> dados retornados pela consulta
 ```
 
 ### Retorno de sucesso
@@ -89,7 +105,7 @@ O retorno segue a estrutura:
 ```text
 {
     .T.,
-    "",
+    "OK",
     {
         {"cep", "01001-000"},
         {"logradouro", "Praça da Sé"},
@@ -102,13 +118,44 @@ O retorno segue a estrutura:
 
 ### Retorno de erro
 
+Exemplo de CEP inexistente:
+
 ```text
 {
     .F.,
-    "CEP nao encontrado.",
+    "CEP_NAO_ENCONTRADO",
     {}
 }
 ```
+
+## Códigos de retorno
+
+A integração utiliza códigos padronizados para facilitar o tratamento das respostas.
+
+```text
+OK
+CEP_VAZIO
+CEP_TAMANHO_INVALIDO
+CEP_DEVE_CONTER_APENAS_NUMEROS
+CEP_NAO_ENCONTRADO
+ERRO_JSON
+```
+
+## Casos de Teste
+
+Os principais cenários funcionais da integração estão documentados em:
+
+```text
+docs/casos-de-teste.md
+```
+
+Entre os cenários cobertos estão:
+
+- CEP vazio
+- CEP com tamanho inválido
+- CEP contendo caracteres não numéricos
+- CEP inexistente
+- CEP válido
 
 ## Aprendizados
 
@@ -118,8 +165,13 @@ Durante o desenvolvimento deste projeto foram praticados conceitos de:
 - Consumo de APIs REST
 - Tratamento de respostas JSON
 - Validação de dados
+- Arrays e estruturas de retorno
+- Padronização de códigos de erro
 - Estruturação e refatoração de funções
 - Tratamento de erros
+- Integração entre sistemas
+- Testes funcionais
+- Criação de casos de teste
 - Git
 - GitHub
 - Documentação técnica

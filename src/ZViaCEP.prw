@@ -4,11 +4,31 @@
 Consulta informacoes de endereco atraves da API ViaCEP.
 
 @param cCEP, Character, CEP que sera consultado
-@return Array, Status da consulta, mensagem e dados do endereco
+@return Array, {Status, CodigoRetorno, Dados}
 
 @author Jhonatan Carvalho
 @since 16/08/2026
 /*/
+
+/*
+Estrutura de retorno:
+
+{Status, CodigoRetorno, Dados}
+
+Exemplos:
+
+{.T., "OK", aEndereco}
+
+{.F., "CEP_VAZIO", {}}
+
+{.F., "CEP_TAMANHO_INVALIDO", {}}
+
+{.F., "CEP_DEVE_CONTER_APENAS_NUMEROS", {}}
+
+{.F., "CEP_NAO_ENCONTRADO", {}}
+
+{.F., "ERRO_JSON", {}}
+*/
 
 User Function ZViaCEP(cCEP)
 
@@ -27,6 +47,8 @@ User Function ZViaCEP(cCEP)
 
 Return aRetorno
 
+
+// Remove caracteres de formatacao do CEP
 Static Function FormataCEP(cCEP)
 
     cCEP := StrTran(cCEP, "-", "")
@@ -34,22 +56,26 @@ Static Function FormataCEP(cCEP)
 
 Return cCEP
 
+
+// Valida as regras do CEP informado
 Static Function ValidaCEP(cCEP)
 
     If Empty(cCEP)
-        Return {.F., "CEP_VAZIO"}
+        Return {.F., "CEP_VAZIO", {}}
     EndIf
 
     If Len(cCEP) <> 8
-        Return {.F., "CEP_TAMANHO_INVALIDO"}
+        Return {.F., "CEP_TAMANHO_INVALIDO", {}}
     EndIf
 
     If !IsDigit(cCEP)
-        Return {.F., "CEP_DEVE_CONTER_APENAS_NUMEROS"}
+        Return {.F., "CEP_DEVE_CONTER_APENAS_NUMEROS", {}}
     EndIf
 
-Return {.T., "OK"}
+Return {.T., "OK", {}}
 
+
+// Realiza a consulta na API ViaCEP e monta o retorno
 Static Function ConsultaViaCEP(cCEP)
 
     Local cURL      := ""
