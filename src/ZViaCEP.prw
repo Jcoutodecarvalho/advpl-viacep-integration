@@ -1,10 +1,10 @@
 #Include "TOTVS.ch"
 
 /*/{Protheus.doc} ZViaCEP
-Consulta informacoes de endereco atraves da API ViaCEP.
+Consulta informações de endereço através da API ViaCEP.
 
-@param cCEP, Character, CEP que sera consultado
-@return Array, Status da consulta, mensagem e dados do endereco
+@param cCEP, Character, CEP que será consultado
+@return Character, Resposta JSON retornada pela API ViaCEP
 
 @author Jhonatan Carvalho
 @since 16/08/2026
@@ -12,17 +12,17 @@ Consulta informacoes de endereco atraves da API ViaCEP.
 
 User Function ZViaCEP(cCEP)
 
-    Local aRetorno := {}
+    Local cRetorno := ""
 
     cCEP := FormataCEP(cCEP)
 
     If !ValidaCEP(cCEP)
-        Return {.F., "CEP invalido.", {}}
+        Return "ERRO: CEP invalido."
     EndIf
 
-    aRetorno := ConsultaViaCEP(cCEP)
+    cRetorno := ConsultaViaCEP(cCEP)
 
-Return aRetorno
+Return cRetorno
 
 
 Static Function FormataCEP(cCEP)
@@ -35,6 +35,10 @@ Return cCEP
 
 Static Function ValidaCEP(cCEP)
 
+    If Empty(cCEP)
+        Return .F.
+    EndIf
+
     If Len(cCEP) <> 8
         Return .F.
     EndIf
@@ -45,14 +49,12 @@ Static Function ValidaCEP(cCEP)
 
 Return .T.
 
-
 Static Function ConsultaViaCEP(cCEP)
 
     Local cURL      := ""
     Local cRetorno  := ""
     Local cErroJson := ""
     Local oJson     := JsonObject():New()
-    Local aEndereco := {}
 
     // Monta a URL da API
     cURL := "https://viacep.com.br/ws/" + cCEP + "/json/"
@@ -60,23 +62,16 @@ Static Function ConsultaViaCEP(cCEP)
     // Realiza a requisicao HTTP GET
     cRetorno := HttpGet(cURL)
 
-    // Converte a resposta da API para objeto JSON
+    // Converte a resposta da API para um objeto JSON
     cErroJson := oJson:FromJson(cRetorno)
 
     If !Empty(cErroJson)
-        Return {.F., "Nao foi possivel interpretar a resposta da API.", {}}
+        Return "ERRO: Nao foi possivel interpretar a resposta da API."
     EndIf
 
-    // Verifica se o CEP foi encontrado
+    // Verifica se o ViaCEP informou que o CEP nao existe
     If oJson:GetJsonObject("erro") == .T.
-        Return {.F., "CEP nao encontrado.", {}}
+        Return "ERRO: CEP nao encontrado."
     EndIf
 
-    // Monta os dados do endereco
-    AAdd(aEndereco, {"cep",        oJson:GetJsonObject("cep")})
-    AAdd(aEndereco, {"logradouro", oJson:GetJsonObject("logradouro")})
-    AAdd(aEndereco, {"bairro",     oJson:GetJsonObject("bairro")})
-    AAdd(aEndereco, {"cidade",     oJson:GetJsonObject("localidade")})
-    AAdd(aEndereco, {"uf",         oJson:GetJsonObject("uf")})
-
-Return {.T., "", aEndereco}
+Return cRetorno
