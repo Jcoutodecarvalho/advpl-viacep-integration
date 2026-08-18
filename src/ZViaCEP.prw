@@ -12,18 +12,20 @@ Consulta informacoes de endereco atraves da API ViaCEP.
 
 User Function ZViaCEP(cCEP)
 
-    Local aRetorno := {}
+    Local aRetorno   := {}
+    Local aValidacao := {}
 
     cCEP := FormataCEP(cCEP)
 
-    If !ValidaCEP(cCEP)
-        Return {.F., "CEP invalido.", {}}
+    aValidacao := ValidaCEP(cCEP)
+
+    If !aValidacao[1]
+        Return {.F., aValidacao[2], {}}
     EndIf
 
     aRetorno := ConsultaViaCEP(cCEP)
 
 Return aRetorno
-
 
 Static Function FormataCEP(cCEP)
 
@@ -35,18 +37,18 @@ Return cCEP
 Static Function ValidaCEP(cCEP)
 
     If Empty(cCEP)
-        Return .F.
+        Return {.F., "CEP_VAZIO"}
     EndIf
 
     If Len(cCEP) <> 8
-        Return .F.
+        Return {.F., "CEP_TAMANHO_INVALIDO"}
     EndIf
 
     If !IsDigit(cCEP)
-        Return .F.
+        Return {.F., "CEP_DEVE_CONTER_APENAS_NUMEROS"}
     EndIf
 
-Return .T.
+Return {.T., "OK"}
 
 Static Function ConsultaViaCEP(cCEP)
 
