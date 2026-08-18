@@ -68,12 +68,12 @@ Static Function ConsultaViaCEP(cCEP)
     cErroJson := oJson:FromJson(cRetorno)
 
     If !Empty(cErroJson)
-        Return {.F., "Nao foi possivel interpretar a resposta da API.", {}}
+        Return {.F., "ERRO_JSON", {}}
     EndIf
 
     // Verifica se o CEP foi encontrado
     If oJson:GetJsonObject("erro") == .T.
-        Return {.F., "CEP nao encontrado.", {}}
+        Return {.F., "CEP_NAO_ENCONTRADO", {}}
     EndIf
 
     // Monta os dados do endereco
@@ -83,4 +83,4 @@ Static Function ConsultaViaCEP(cCEP)
     AAdd(aEndereco, {"cidade",     oJson:GetJsonObject("localidade")})
     AAdd(aEndereco, {"uf",         oJson:GetJsonObject("uf")})
 
-Return {.T., "", aEndereco}
+Return {.T., "OK", aEndereco}
